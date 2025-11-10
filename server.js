@@ -21,14 +21,16 @@ connectDB();
 
 // app
 const app = express();
-app.use(express.json());
-app.use(cookieParser());
 app.use(
   cors({
     origin: ["https://clone-frontend-opal.vercel.app", "http://localhost:5173"],
     credentials: true,
   })
 );
+
+// Middleware
+app.use(express.json());
+app.use(cookieParser());
 
 const PORT = process.env.PORT || 5000;
 
