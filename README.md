@@ -8,7 +8,7 @@ A full-stack e-commerce application inspired by Amazon, built with **Node.js**, 
 
 - API (Products endpoint): [https://clone-production-8d54.up.railway.app/api/products](https://clone-production-8d54.up.railway.app/api/products)
 
-> **Note:** Endpoints like `/api/cart`, `/api/orders`, and `/api/users` are **protected** and require authentication.
+> **Note:** Endpoints like `/api/cart`, `/api/orders`, `/api/address` and `/api/users` are **protected** and require authentication.
 
 ---
 
@@ -37,6 +37,11 @@ A full-stack e-commerce application inspired by Amazon, built with **Node.js**, 
   - View order history
   - Tracks order status (pending, shipped, delivered, cancelled)
 
+- **Address Management**
+
+  - Add new Address
+  - Get All saved address
+
 - **Middleware**
   - Authentication middleware to protect routes
 
@@ -46,6 +51,7 @@ A full-stack e-commerce application inspired by Amazon, built with **Node.js**, 
 
 ```
 controllers/
+    addressControllers.js
     authControllers.js
     cartController.js
     ordersControllers.js
@@ -60,10 +66,12 @@ models/
     reviewModel.js
     userModel.js
 routes/
+    addressRoutes.js
     authRoutes.js
     cartRoutes.js
     ordersRoutes.js
     productRoutes.js
+
 utils/
     generateTokenResponse.js
 server.js
@@ -125,17 +133,20 @@ npm start
 | GET    | `/api/orders/my`       | Get user orders       |
 | POST   | `/api/users/register`  | Register user         |
 | POST   | `/api/users/login`     | Login user            |
+| POST   | `/api/address`         | Create address        |
+| GET    | `/api/address`         | Get all addresses     |
 
-> **Note:** Access protected routes with an `Authorization` header:  
-> `Authorization: Bearer <JWT_TOKEN>`
+> **Note:** Access protected routes with an `Authorization` cookie-based:  
+> `Authorization: Cookie-Based`
 
 ---
 
-## 🔐 Authentication Flow
+## 🔐 Authentication Flow (Cookie-Based)
 
-1. Register or login to get a JWT token.
-2. Include the token in request headers for protected endpoints.
-3. Server validates the token via `authMiddleware.js`.
+1. User logs in → server sends a JWT inside a secure HTTP-only cookie
+2. Frontend cannot read or modify the token
+3. Browser auto-sends cookie with every request
+4. Server validates the token via `authMiddleware.js`.
 
 ## 📌 License
 
