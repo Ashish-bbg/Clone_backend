@@ -6,21 +6,18 @@ import User from "../models/userModel.js";
 // @route   POST /api/orders
 // @desc    Create (place) a new order
 // @access  Private
-export const placeOrders = async (req, res) => {
+export const createOrder = async (req, res) => {
   try {
-    const { paymentMethod } = req.body || "COD";
+    const { paymentMethod = "COD", shippingAddressId } = req.body;
     const userId = req.user._id;
 
-    const user = await User.findById(userId).populate("address");
-    if (!user) {
-      return res.status(404).json({
-        message: "User not found",
-      });
+    if (!shippingAddressId) {
+      return res.status(400).json({ message: "Shipping Address is required" });
     }
 
     const cart = await Cart.findOne({ userId }).populate(
       "items.productId",
-      "name price"
+      "name price stock"
     );
 
     if (!cart || cart.items.length === 0) {
@@ -28,17 +25,35 @@ export const placeOrders = async (req, res) => {
         message: "Cart is empty",
       });
     }
+    // 3. SERVER-SIDE CALCULATION (Fix for Security Flaw)
+    let finalTotalAmount = 0;
+    const orderItems = [];
+    for (const item of cart.items) {
+      if (!item.productId || typeof item.productId.price !== "number") {
+        return res.status(400).json({
+          message: `Invalid product in cart: ${item.productId}`,
+        });
+      }
 
-    const orderItems = cart.items.map((item) => ({
-      productId: item.productId._id,
-      quantity: item.quantity,
-      price: item.price,
-    }));
+      // checking if stock is available
+      if (item.productId.stock < item.quantity) {
+        return res
+          .status(400)
+          .json({ message: `Not enough stock for ${item.productId.name}` });
+      }
 
-    const stockUpdateBulk = cart.items.map((item) => ({
+      orderItems.push({
+        productId: item.productId._id,
+        quantity: item.quantity,
+        price: item.productId.price,
+      });
+
+      finalTotalAmount += item.productId.price * item.quantity;
+    }
+    const stockUpdateBulk = orderItems.map((item) => ({
       updateOne: {
         filter: {
-          _id: item.productId._id,
+          _id: item.productId,
         },
         update: {
           $inc: {
@@ -53,9 +68,9 @@ export const placeOrders = async (req, res) => {
     const order = await Order.create({
       userId,
       items: orderItems,
-      totalAmount: cart.totalAmount,
+      totalAmount: finalTotalAmount,
       paymentMethod,
-      shippingAddress: user.address[0],
+      shippingAddress: shippingAddressId,
     });
 
     // Clear the cart after placing
@@ -74,7 +89,7 @@ export const placeOrders = async (req, res) => {
 // @route   GET /api/orders/my
 // @desc    get (placed)  order
 // @access  Private
-export const getOrders = async (req, res) => {
+export const getMyOrders = async (req, res) => {
   const orders = await Order.find({ userId: req.user._id })
     .populate("items.productId", "name price imageUrl")
     .populate("shippingAddress");

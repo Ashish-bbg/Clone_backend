@@ -18,8 +18,8 @@ export const getCartItems = async (req, res) => {
     );
 
     if (!cart || cart.items.length === 0) {
-      return res.status(404).json({
-        message: "Cart not found",
+      return res.status(204).json({
+        message: "Cart is empty",
         items: [],
         totalItems: 0,
         totalAmount: 0,
@@ -142,8 +142,8 @@ export const updateCartItem = async (req, res) => {
     const cart = await Cart.findOne({ userId });
 
     if (!cart) {
-      return res.status(404).json({
-        message: "Cart not found",
+      return res.status(204).json({
+        message: "Cart is empty",
       });
     }
 
@@ -152,7 +152,7 @@ export const updateCartItem = async (req, res) => {
     );
 
     if (!item) {
-      return res.status(404).json({
+      return res.status(204).json({
         message: "Product not in cart",
       });
     }
@@ -187,8 +187,8 @@ export const removeCartItem = async (req, res) => {
     const cart = await Cart.findOne({ userId });
 
     if (!cart) {
-      return res.status(404).json({
-        message: "Cart not found",
+      return res.status(204).json({
+        message: "Cart is empty",
       });
     }
 

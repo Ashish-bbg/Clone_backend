@@ -13,6 +13,7 @@ import authRoutes from "./routes/authRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js";
 import ordersRoutes from "./routes/ordersRoutes.js";
+import addressRoutes from "./routes/addressRoutes.js";
 import cookieParser from "cookie-parser";
 
 dotenv.config();
@@ -39,6 +40,7 @@ app.use("/api/users", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/orders", ordersRoutes);
+app.use("/api/address", addressRoutes);
 // route middlewares ends here
 
 app.get("/", (req, res) => {
