@@ -4,7 +4,8 @@ import Address from "../models/addressModel.js";
 // @route POST /api/address
 export const createAddress = async (req, res) => {
   try {
-    const userId = req.user._id;
+    const userId = req.user?._id;
+    console.log("frontend data:", req.body);
     const { name, phoneNumber, type, line1, city, state, zip, country } =
       req.body;
 
@@ -69,7 +70,7 @@ export const updateAddress = async (req, res) => {
 export const deleteAddress = async (req, res) => {
   try {
     const { id } = req.params;
-    const userId = req.user_.id;
+    const userId = req.user._id;
     const address = await Address.findOneAndDelete({ _id: id, userId: userId });
     if (!address) {
       return res
