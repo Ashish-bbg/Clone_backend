@@ -1,6 +1,6 @@
 import Razorpay from "razorpay";
 import dotenv from "dotenv";
-import Cart from "../models/cartModel";
+import Cart from "../models/cartModel.js";
 dotenv.config();
 
 // like logging to razorpay
