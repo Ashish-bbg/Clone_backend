@@ -14,6 +14,7 @@ import productRoutes from "./routes/productRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js";
 import ordersRoutes from "./routes/ordersRoutes.js";
 import addressRoutes from "./routes/addressRoutes.js";
+import paymentRoutes from "./routes/paymentRoutes.js";
 import cookieParser from "cookie-parser";
 
 dotenv.config();
@@ -41,6 +42,7 @@ app.use("/api/products", productRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/orders", ordersRoutes);
 app.use("/api/address", addressRoutes);
+app.use("/api/payment", paymentRoutes);
 // route middlewares ends here
 
 app.get("/", (req, res) => {
