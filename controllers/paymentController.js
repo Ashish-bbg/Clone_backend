@@ -51,7 +51,7 @@ export const createRazorpayOrder = async (req, res) => {
     // const order: Razorpay replies with an object containing an id (e.g., order_Kz92...). This ID is required to open the payment popup on the frontend.
     const order = await razorpay.orders.create(options);
 
-    res.send(200).json({
+    res.status(200).json({
       success: true,
       orderId: order.id,
       amount: order.amount,
