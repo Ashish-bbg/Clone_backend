@@ -91,6 +91,7 @@ export const createOrder = async (req, res) => {
 // @access  Private
 export const getMyOrders = async (req, res) => {
   const orders = await Order.find({ userId: req.user._id })
+    .sort({ createdAt: -1 })
     .populate("items.productId", "name price imageUrl")
     .populate("shippingAddress");
   res.status(200).json(orders);
