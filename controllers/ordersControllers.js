@@ -1,7 +1,6 @@
 import Cart from "../models/cartModel.js";
 import Order from "../models/orderModel.js";
 import Product from "../models/productModel.js";
-import User from "../models/userModel.js";
 
 // @route   POST /api/orders
 // @desc    Create (place) a new order
@@ -90,9 +89,46 @@ export const createOrder = async (req, res) => {
 // @desc    get (placed)  order
 // @access  Private
 export const getMyOrders = async (req, res) => {
-  const orders = await Order.find({ userId: req.user._id })
-    .sort({ createdAt: -1 })
-    .populate("items.productId", "name price imageUrl")
-    .populate("shippingAddress");
-  res.status(200).json(orders);
+  try {
+    const orders = await Order.find({ userId: req.user._id })
+      .sort({ createdAt: -1 })
+      .populate("items.productId", "name price imageUrl")
+      .populate("shippingAddress");
+    res.status(200).json(orders);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @route GET /api/orders/:id
+// @desc get order by id
+// @access Private
+export const getOrderById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid Order ID" });
+    }
+
+    const order = await Order.findOne({
+      _id: id,
+      userId: req.user._id,
+    })
+      .populate({
+        path: "items.productId",
+        select: "name price images",
+        options: {
+          slice: { images: 1 },
+        },
+      })
+      .populate("shippingAddress");
+
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    res.status(200).json(order);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
