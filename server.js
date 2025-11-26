@@ -31,8 +31,8 @@ app.use(
 );
 
 // Middleware
-app.use(express.json());
 app.use(cookieParser());
+app.use(express.json());
 
 const PORT = process.env.PORT || 5000;
 

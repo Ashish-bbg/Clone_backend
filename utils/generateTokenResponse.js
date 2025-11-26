@@ -5,10 +5,12 @@ export const generateTokenResponse = (res, user) => {
     expiresIn: "30d",
   });
 
+  const isProduction = process.env.NODE_ENV === "production";
+
   res.cookie("token", token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "None",
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "strict",
     path: "/", // always attach to all routes
     maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
   });
