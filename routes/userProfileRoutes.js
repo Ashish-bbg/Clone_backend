@@ -10,6 +10,6 @@ const router = express.Router();
 // /api/userProfile/
 router.get("/", protect, getUserProfile);
 
-router.put("/", updateUserProfile);
+router.put("/", protect, updateUserProfile);
 
 export default router;
