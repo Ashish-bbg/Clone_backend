@@ -155,14 +155,3 @@ export const logout = (req, res) => {
     return res.status(500).json({ message: "Unable to clear cookie" });
   }
 };
-
-export const getUserProfile = async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id).select("-password");
-    return res.status(200).json(user);
-  } catch (err) {
-    res.status(500).json({
-      message: "Server error fetching user profile",
-    });
-  }
-};

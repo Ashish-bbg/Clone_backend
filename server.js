@@ -10,6 +10,8 @@ import Cart from "./models/cartModel.js";
 import Address from "./models/addressModel.js";
 
 import authRoutes from "./routes/authRoutes.js";
+import userProfileRoutes from "./routes/userProfileRoutes.js";
+
 import productRoutes from "./routes/productRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js";
 import ordersRoutes from "./routes/ordersRoutes.js";
@@ -37,7 +39,9 @@ app.use(express.json());
 const PORT = process.env.PORT || 5000;
 
 // router middlewares starts here
-app.use("/api/users", authRoutes);
+app.use("/api/auth", authRoutes); // changes from /api/users to /api/auth
+app.use("/api/userProfile", userProfileRoutes);
+
 app.use("/api/products", productRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/orders", ordersRoutes);
