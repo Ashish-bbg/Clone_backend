@@ -24,14 +24,18 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "user",
     },
-    address: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Address",
-      },
-    ],
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+  }
 );
+
+userSchema.virtual("addresses", {
+  ref: "Address",
+  localField: "_id",
+  foreignField: "userId",
+});
 
 export default mongoose.model("User", userSchema);

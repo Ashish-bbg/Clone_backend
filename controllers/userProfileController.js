@@ -4,7 +4,10 @@ import User from "../models/userModel.js";
 // @desc get loggedIn user profile
 export const getUserProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select("-password");
+    const user = await User.findById(req.user.id)
+      .select("-password")
+      .populate("addresses");
+    // console.log(user);
     return res.status(200).json(user);
   } catch (err) {
     res.status(500).json({
@@ -22,7 +25,7 @@ export const updateUserProfile = async (req, res) => {
     if (user) {
       user.name = req.body.name || user.name;
       user.phoneNumber = req.body.phoneNumber || user.phoneNumber;
-
+      console.log(req.body);
       const updatedUser = await user.save();
 
       res.json({
