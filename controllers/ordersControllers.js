@@ -132,3 +132,53 @@ export const getOrderById = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// @route POST /api/orders/:id
+// @desc cancell order by id
+// @access Private
+
+export const cancelOrderById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user._id;
+
+    const order = await Order.findOne({ _id: id, userId: userId });
+
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    if (order.status === "shipped" || order.status === "delivered") {
+      return res.status(400).json({
+        message: `Cannot cancel order. It has already been ${order.status}`,
+      });
+    }
+
+    if (order.status === "cancelled") {
+      return res.status(400).json({
+        message: "Order is already cancelled",
+      });
+    }
+
+    const stockRestorationBulk = order.items.map((item) => ({
+      updateOne: {
+        filter: { _id: item.productId },
+        update: { $inc: { stock: +item.quantity } },
+      },
+    }));
+
+    await Product.bulkWrite(stockRestorationBulk);
+
+    order.status = "cancelled";
+    await order.save();
+
+    res.status(200).json({
+      message: "Order cancelled successfully",
+    });
+  } catch (error) {
+    console.error("Error cancelling order", error);
+    res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+};
